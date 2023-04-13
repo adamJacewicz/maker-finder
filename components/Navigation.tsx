@@ -28,17 +28,18 @@ const Navigation = () => {
 
   return (
     <nav className="bg-base-700">
-      <div className="p-6 mx-auto container flex justify-between items-center ">
+      <div className="p-4 mx-auto container flex justify-between items-center">
         <Link href="/" className="text-2xl font-bold leading-none">
           MakerFinder
         </Link>
 
         <div>
           <Link className="hover:bg-base-600 rounded-md px-3 py-2 font-medium" href="/">Home</Link>
+          <Link className="hover:bg-base-600 rounded-md px-3 py-2 font-medium" href="/profiles/browse">Browse</Link>
         </div>
         {isAuthenticated ? (
           <Menu as="div" className="relative">
-            <Menu.Button className="p-1 rounded-full hover:bg-base-500">
+            <Menu.Button className="rounded-full hover:bg-base-500 block">
               <div className="border-2 rounded-full overflow-hidden flex justify-center items-center w-10 h-10">
                 {data?.user?.image ? <img src={data.user.image} alt="User image" /> : <User />}
               </div>
@@ -47,7 +48,7 @@ const Navigation = () => {
               {menuItems.map(({ as, text, ...rest }, index) => (
                 <Menu.Item
                   as={as}
-                  className="font-medium tracking-wide hover:bg-base-500 rounded-md w-full block px-2 py-1.5  text-left"
+                  className="font-medium tracking-wide hover:bg-base-500 rounded-md w-full block px-2 py-1.5 text-left"
                   key={index}
                   {...rest}
                 >
