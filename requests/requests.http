@@ -1,0 +1,14 @@
+
+###
+http://localhost:3000/api/hello
+Cookie: {{token}}
+
+###
+PUT http://localhost:3000/api/user/filter
+Cookie: {{token}}
+Content-Type: application/json
+
+{
+  "skill": "SCRUM_MASTER",
+  "timezone": "GMT+10:00"
+}
