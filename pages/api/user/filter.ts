@@ -1,19 +1,33 @@
 import onlyAuth from '@/hooks/only-auth';
-import { upsertFilter } from '@/services/filter.service';
+import {getFilter, upsertFilter} from '@/services/filter.service';
 import { Method } from '@/utils/constants';
+import { NextApiRequest, NextApiResponse } from 'next';
 
-export default onlyAuth(async (req, res) => {
+const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+  if(!req.currentUser) return
   switch (req.method) {
     case Method.PUT: {
       try {
-        const filter = req.currentUser && (await upsertFilter(req.currentUser.id, req.body));
+        const filter = await upsertFilter(req.currentUser.id, req.body);
         res.status(200).json({ filter });
       } catch (error) {
         res.status(422).json({ filter: null, error });
       }
       break;
     }
+    case Method.GET: {
+      try {
+        const filter = await getFilter(req.currentUser.id);
+        res.status(200).json({filter});
+      } catch (error) {
+        res.status(422).json({ filter: null, error });
+      }
+      break;
+    }
+
     default:
       res.status(400);
   }
-});
+};
+
+export default onlyAuth(handler);

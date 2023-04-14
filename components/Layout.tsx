@@ -5,7 +5,7 @@ const Layout: FC<PropsWithChildren> = ({ children }) => {
   return (
     <section>
       <Navigation />
-      <main> {children}</main>
+      <main className="container mx-auto"> {children}</main>
     </section>
   );
 };

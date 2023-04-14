@@ -12,3 +12,13 @@ Content-Type: application/json
   "skill": "SCRUM_MASTER",
   "timezone": "GMT+10:00"
 }
+
+###
+POST http://localhost:3000/api/profiles
+Content-Type: application/json
+Cookie: {{token}}
+
+{
+  "targetId": "b61016dd-d402-4243-97cf-ff90e3008568",
+  "liked": false
+}

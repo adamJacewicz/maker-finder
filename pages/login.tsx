@@ -39,7 +39,7 @@ const Login: FC = () => {
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   const session = await getServerSession(req, res, authOptions);
-  if (session) {
+  if (session?.user) {
     return {
       redirect: {
         destination: '/',

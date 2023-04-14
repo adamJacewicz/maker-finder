@@ -1,19 +1,23 @@
 import { PrismaClient } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import { skills, timezones } from '../utils/constants';
+import axios from 'axios';
 
 const prisma = new PrismaClient();
 
-const createUser = async () => {
-  const name = faker.name.firstName();
+const createUser = async (image: string) => {
   try {
+    const firstName = faker.name.firstName();
+    const lastName = faker.name.lastName();
     await prisma.user.create({
       data: {
-        name,
-        email: faker.internet.email(name).toLowerCase(),
-        image: faker.internet.avatar(),
+        name: `${firstName} ${lastName}`,
+        email: faker.internet.email(firstName, lastName),
+        image,
+        emailVerified: new Date(),
         timezone: faker.helpers.arrayElement(timezones),
         skill: faker.helpers.objectKey(skills),
+        description: faker.lorem.paragraph(5),
         filter: {
           create: {
             timezone: faker.helpers.arrayElement(timezones),
@@ -55,8 +59,14 @@ const invoke = async (fun: () => Promise<void> | void, times: number = 1) => {
 };
 
 const main = async () => {
-  await cleanTables();
-  await invoke(createUser, 20);
+  const { data } = await axios<{
+    results: [
+      {
+        picture: { large: string };
+      },
+    ];
+  }>('https://randomuser.me/api/?results=50');
+  await Promise.all(data.results.map((user) => createUser(user.picture.large)));
   await createLikes();
 };
 

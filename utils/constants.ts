@@ -1,3 +1,5 @@
+import { HTTP_METHODS } from 'next/dist/server/web/http';
+
 export const skills = {
   FRONTEND_DEVELOPER: 'Frontend Developer',
   BACKEND_DEVELOPER: 'Backend Developer',
@@ -45,4 +47,6 @@ export const Method = {
   PUT: 'PUT',
   GET: 'GET',
   POST: 'POST',
+  DELETE: 'DELETE',
 } as const;
+

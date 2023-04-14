@@ -9,11 +9,14 @@ export type User = {
   id: string;
   name: string;
   email: string;
+  description?: string;
   image: string;
   timezone: (typeof timezones)[number];
-  skill: keyof typeof skills;
-  filter: Filter;
+  skill?: keyof typeof skills;
+  filter?: Filter;
 };
+
+export type ProfileType = Pick<User, 'name' | 'description' | 'email' | 'id' | 'skill' | 'image'>;
 
 export type CurrentUser = {
   name: string;
@@ -21,4 +24,3 @@ export type CurrentUser = {
   image: string;
   id: string;
 };
-

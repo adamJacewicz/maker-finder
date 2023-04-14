@@ -62,7 +62,8 @@ model User {
   profilesChecked     Like[]                @relation("ProfilesChecked")
   targetChecks        Like[]                @relation("TargetProfiles")
   skill               Skill?
-  filter              Filter?
+  description         String?
+  filter              ProfileFilter?
   timezone            String?
   createdAt           DateTime              @default(now()) @map("created_at")
   updatedAt           DateTime              @default(now()) @map("updated_at")
@@ -87,7 +88,7 @@ model Like {
   @@map("likes")
 }
 
-model Filter {
+model ProfileFilter {
   id       String  @id @default(uuid())
   skill    Skill?
   timezone String?

@@ -34,8 +34,18 @@ const Navigation = () => {
         </Link>
 
         <div>
-          <Link className="hover:bg-base-600 rounded-md px-3 py-2 font-medium" href="/">Home</Link>
-          <Link className="hover:bg-base-600 rounded-md px-3 py-2 font-medium" href="/profiles/browse">Browse</Link>
+          <Link className="hover:bg-base-600 rounded-md px-3 py-2 font-medium" href="/">
+            Home
+          </Link>
+          <Link
+            className="hover:bg-base-600 rounded-md px-3 py-2 font-medium"
+            href="/profiles/browse"
+          >
+            Browse
+          </Link>
+          <Link className="hover:bg-base-600 rounded-md px-3 py-2 font-medium" href="/matches">
+            Matches
+          </Link>
         </div>
         {isAuthenticated ? (
           <Menu as="div" className="relative">

@@ -1,16 +1,18 @@
 import React, { FC } from 'react';
 import Layout from '@/components/Layout';
-import SelectInput from '@/components/SelectInput';
-import { skills } from '@/utils/constants';
 import prisma from '@/prisma';
 import { getSession } from 'next-auth/react';
-import { User } from '@/types/model';
+import { Filter } from '@/types/model';
 import { GetServerSideProps } from 'next';
+import {findMatch, getMatched} from '@/services/match.service';
+import ProfileFilter from '@/components/ProfileFilter';
+import {mockSession} from "next-auth/client/__tests__/helpers/mocks";
+import user = mockSession.user;
 
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   const session = await getSession({ req });
 
-  if (!session) {
+  if (!session?.user) {
     return {
       redirect: {
         destination: `/login`,
@@ -18,38 +20,38 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
       },
     };
   }
-
-  const currentUser = await prisma.user.findUnique({
+  const filter = await prisma.profileFilter.findUnique({
     where: {
-      id: session.user?.id,
+      userId: session.user.id,
     },
     select: {
-      id: true,
-      skill: true,
       timezone: true,
-      filter: {
-        select: {
-          skill: true,
-          timezone: true,
-        },
-      },
+      skill: true,
     },
   });
 
+  const profile = await findMatch(session.user.id);
+
+  if (profile) {
+    return {
+      redirect: {
+        destination: `/profiles/${profile.id}`,
+        permanent: false,
+      },
+    };
+  }
+
   return {
-    props: { currentUser },
+    props: { filter },
   };
 };
 
-const Browse: FC<{ currentUser: User }> = ({ currentUser }) => {
-  const skillsList = Object.entries(skills).map(([value, label]) => ({ label, value }));
+const Browse: FC<{ filter: Filter }> = ({ filter }) => {
   return (
     <Layout>
-      <SelectInput
-        values={skillsList}
-        defaultValue={{ value: currentUser.skill, label: skills[currentUser.skill] }}
-      ></SelectInput>
-      <p className="text-center mt-10 text-2xl">
+      <ProfileFilter filter={filter} />
+
+      <p className="text-center mt-20 text-2xl">
         Unfortunately we do not have more profiles at the moment. <br />
         Please change your filter and try again...
       </p>
