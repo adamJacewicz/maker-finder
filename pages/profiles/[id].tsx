@@ -6,7 +6,6 @@ import ProfileFilter from '@/components/ProfileFilter';
 import useAuth from '@/hooks/use-auth';
 import restClient from '@/rest-client';
 import { Filter, ProfileType } from '@/types/model';
-import { useRouter } from 'next/router';
 import ProfilePreview from '@/components/ProfilePreview';
 
 export const getStaticPaths = async () => {
@@ -43,7 +42,6 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 export const ProfilePage: FC<{ profile: ProfileType }> = ({ profile }) => {
   const { isAuthenticated } = useAuth();
   const [filter, setFilter] = useState<Filter | undefined>();
-
 
 
   useEffect(() => {

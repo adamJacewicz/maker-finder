@@ -4,10 +4,8 @@ import prisma from '@/prisma';
 import { getSession } from 'next-auth/react';
 import { Filter } from '@/types/model';
 import { GetServerSideProps } from 'next';
-import {findMatch, getMatched} from '@/services/match.service';
+import { findMatch } from '@/services/match.service';
 import ProfileFilter from '@/components/ProfileFilter';
-import {mockSession} from "next-auth/client/__tests__/helpers/mocks";
-import user = mockSession.user;
 
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   const session = await getSession({ req });
@@ -40,7 +38,6 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
       },
     };
   }
-
   return {
     props: { filter },
   };

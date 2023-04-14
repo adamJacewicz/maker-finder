@@ -43,8 +43,8 @@ const Navigation = () => {
           >
             Browse
           </Link>
-          <Link className="hover:bg-base-600 rounded-md px-3 py-2 font-medium" href="/matches">
-            Matches
+          <Link className="hover:bg-base-600 rounded-md px-3 py-2 font-medium" href="/connections">
+            Connections
           </Link>
         </div>
         {isAuthenticated ? (

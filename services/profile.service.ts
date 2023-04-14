@@ -1,6 +1,7 @@
 import { Filter } from '@/types/model';
 import prisma from '@/prisma';
 import { checkIfMatchExists } from '@/services/match.service';
+import {initConversation} from "@/services/conversation.service";
 
 export const updateProfile = async (
   userId: string,
@@ -56,7 +57,10 @@ export const processProfile = async ({
     },
   });
 
-  const hasMatch = liked ? await checkIfMatchExists(userId, targetId) : false;
+  const hasMatch = liked ? await checkIfMatchExists(targetId, userId) : false;
+  if (hasMatch) {
+    await initConversation([userId, targetId]);
+  }
 
   const targetUser = await prisma.user.findUnique({
     where: {

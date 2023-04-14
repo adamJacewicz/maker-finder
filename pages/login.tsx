@@ -6,6 +6,7 @@ import { GetServerSideProps } from 'next';
 import { authOptions } from '@/pages/api/auth/[...nextauth]';
 import { getServerSession } from 'next-auth';
 import { useRouter } from 'next/router';
+import { cookies } from 'next/headers';
 
 const Login: FC = () => {
   const [signing, setSigning] = useState(false);
@@ -14,7 +15,7 @@ const Login: FC = () => {
   const handleLogin: MouseEventHandler = async (e) => {
     e.preventDefault();
     setSigning(true);
-    const callbackUrl = [...(router?.query?.callbackUrl ?? '/')].join('');
+    const callbackUrl = [...([router?.query?.callbackUrl] ?? '/')].flat().join('');
     await signIn('github', { callbackUrl });
   };
 
@@ -47,7 +48,6 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
       },
     };
   }
-
   return {
     props: {},
   };

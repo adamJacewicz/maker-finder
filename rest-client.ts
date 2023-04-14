@@ -1,5 +1,6 @@
-import axios from 'axios';
-import { Filter, ProfileType, User } from '@/types/model';
+import axios, {AxiosPromise} from 'axios';
+import {Conversation as ConversationType, Conversation, Filter, ProfileType, User} from '@/types/model';
+import {Fetcher} from "swr";
 
 const axiosInstance = axios.create({
   headers: {
@@ -27,7 +28,13 @@ const restClient = {
         axiosInstance.put<{ user: User }>('/api/user/profile', payload),
     },
   },
-  fetcher: (url: string) => axiosInstance.get(url).then((res) => res.data),
+  conversations: {
+    message: {
+      create: (id: string, payload: { content: string }) =>
+        axiosInstance.post(`/api/conversations/${id}`, payload),
+    },
+  },
+  fetcher:((url: string) => axiosInstance.get(url).then(res => res.data)) as Fetcher<{ conversation: ConversationType }, string>   ,
 };
 
 export default restClient;
