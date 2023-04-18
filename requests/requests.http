@@ -22,3 +22,9 @@ Cookie: {{token}}
   "targetId": "b61016dd-d402-4243-97cf-ff90e3008568",
   "liked": false
 }
+
+###
+GET http://localhost:3000/api/profiles?id=255
+Content-Type: application/json
+Cookie: {{token}}
+

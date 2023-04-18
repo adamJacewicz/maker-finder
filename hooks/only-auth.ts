@@ -6,7 +6,7 @@ const onlyAuth = (handler: NextApiHandler): NextApiHandler=> {
   return async (req, res) => {
     const session = await getServerSession(req, res, authOptions);
     if (!session?.user) {
-      return res.status(401).json({
+      return res.status(401).redirect("/login").json({
         success: false,
         message: 'Please log in to get access.',
       });

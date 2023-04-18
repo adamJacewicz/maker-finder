@@ -1,18 +1,18 @@
 import prisma from '@/prisma';
 import { Filter } from '@/types/model';
 
-export const upsertFilter = async (userId: string, { skill, timezone }: Partial<Filter>) =>
-  await prisma.profileFilter.upsert({
+export const upsertFilter = async (userId: number, { profession, timezone }: Filter) =>
+  await prisma.filter.upsert({
     where: {
       userId,
     },
     update: {
-      skill,
+      profession,
       timezone,
       updatedAt: new Date(),
     },
     create: {
-      skill,
+      profession,
       timezone,
       user: {
         connect: {
@@ -22,13 +22,13 @@ export const upsertFilter = async (userId: string, { skill, timezone }: Partial<
     },
   });
 
-export const getFilter = async (userId: string) =>
-  await prisma.profileFilter.findUnique({
+export const getFilter = async (userId: number) =>
+  await prisma.filter.findUnique({
     where: {
       userId,
     },
     select: {
       timezone: true,
-      skill: true,
+      profession: true,
     },
   });

@@ -1,6 +1,6 @@
 import React, { FC, useState } from 'react';
 import { Listbox } from '@headlessui/react';
-import Check from '@/public/check.svg';
+import CheckIcon from '@/public/check.svg';
 
 export interface Option {
   label: string;
@@ -37,7 +37,7 @@ const SelectInput: FC<SelectInputProps> = ({ options, defaultValue, onChange, na
               value={option}
             >
               <span>{option.label}</span>
-              {selected.value === option.value && <Check />}
+              {selected.value === option.value && <CheckIcon />}
             </Listbox.Option>
           ))}
         </Listbox.Options>

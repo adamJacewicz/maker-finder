@@ -1,6 +1,4 @@
-import { HTTP_METHODS } from 'next/dist/server/web/http';
-
-export const skills = {
+export const professions = {
   FRONTEND_DEVELOPER: 'Frontend Developer',
   BACKEND_DEVELOPER: 'Backend Developer',
   MOBILE_DEVELOPER: 'Mobile Developer',
@@ -17,36 +15,53 @@ export const skills = {
 } as const;
 
 export const timezones = [
-  'GMT',
-  'GMT+1:00',
-  'GMT+2:00',
-  'GMT+3:00',
-  'GMT+4:00',
-  'GMT+5:00',
-  'GMT+6:00',
-  'GMT+7:00',
-  'GMT+8:00',
-  'GMT+9:00',
-  'GMT+10:00',
-  'GMT+11:00',
   'GMT+12:00',
-  'GMT-11:00',
-  'GMT-10:00',
-  'GMT-9:00',
-  'GMT-8:00',
-  'GMT-7:00',
-  'GMT-6:00',
-  'GMT-5:00',
-  'GMT-4:00',
-  'GMT-3:00',
-  'GMT-2:00',
+  'GMT+11:00',
+  'GMT+10:00',
+  'GMT+9:00',
+  'GMT+8:00',
+  'GMT+7:00',
+  'GMT+6:00',
+  'GMT+5:00',
+  'GMT+4:00',
+  'GMT+3:00',
+  'GMT+2:00',
+  'GMT+1:00',
+  'GMT',
   'GMT-1:00',
+  'GMT-2:00',
+  'GMT-3:00',
+  'GMT-4:00',
+  'GMT-5:00',
+  'GMT-6:00',
+  'GMT-7:00',
+  'GMT-8:00',
+  'GMT-9:00',
+  'GMT-10:00',
+  'GMT-11:00',
 ] as const;
 
-export const Method = {
+
+export const introSteps = [
+  {
+    title: 'Create profile',
+    label: 'Describe who you are, what are your skills, and what would you like to build.',
+  },
+  {
+    title: 'Meet creators',
+    label:
+      'Setup filters and start looking through other profiles. Interested in talking to someone? Like their profile.',
+  },
+  {
+    title: 'Perfect match',
+    label:
+      'If somebody liked back your profile you have a match! Now you may instantly jump into conversion and start building!',
+  },
+] as const;
+
+export const HttpMethod = {
   PUT: 'PUT',
   GET: 'GET',
   POST: 'POST',
   DELETE: 'DELETE',
 } as const;
-

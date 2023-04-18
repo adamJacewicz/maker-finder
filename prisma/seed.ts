@@ -1,52 +1,96 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { faker } from '@faker-js/faker';
-import { skills, timezones } from '../utils/constants';
-import axios from 'axios';
+import { professions, timezones } from '../utils/constants';
+import { encrypt, getRandomSalt } from '../utils/helpers';
+import { Credentials } from '../types/common';
 
 const prisma = new PrismaClient();
 
-const createUser = async (image: string) => {
-  try {
-    const firstName = faker.name.firstName();
-    const lastName = faker.name.lastName();
-    await prisma.user.create({
-      data: {
-        name: `${firstName} ${lastName}`,
-        email: faker.internet.email(firstName, lastName),
-        image,
-        emailVerified: new Date(),
+const getRandomImage = (sex: 'female' | 'male') => {
+  const id = faker.datatype.number({ max: 99 });
+  const gender = sex === 'male' ? 'men' : 'women';
+  return `https://randomuser.me/api/portraits/${gender}/${id}.jpg`;
+};
+
+const createUser = async (credentials?: Credentials) => {
+  const sex = faker.name.sexType();
+  const lastName = faker.name.lastName(sex);
+  const firstName = faker.name.firstName(sex);
+
+  const user: Prisma.UserCreateInput = {
+    name: `${firstName} ${lastName}`,
+    email: credentials?.email ?? faker.internet.email(firstName, lastName).toLowerCase(),
+    image: getRandomImage(sex),
+    timezone: faker.helpers.arrayElement(timezones),
+    profession: faker.helpers.objectKey(professions),
+    description: faker.lorem.paragraph(10),
+    filter: {
+      create: {
         timezone: faker.helpers.arrayElement(timezones),
-        skill: faker.helpers.objectKey(skills),
-        description: faker.lorem.paragraph(5),
-        filter: {
-          create: {
-            timezone: faker.helpers.arrayElement(timezones),
-            skill: faker.helpers.objectKey(skills),
-          },
-        },
+        profession: faker.helpers.objectKey(professions),
       },
+    },
+  };
+
+  if (credentials) {
+    const passwordSalt = getRandomSalt();
+    const passwordHash = encrypt(credentials.password, passwordSalt);
+    user.passwordSalt = passwordSalt;
+    user.passwordHash = passwordHash;
+  }
+
+  try {
+    return await prisma.user.create({
+      data: user,
     });
   } catch (err) {
     console.error(err);
   }
 };
 
-const createLikes = async () => {
-  const users = await prisma.user.findMany({ take: 20, select: { id: true, filter: true } });
-  for (let i = 0; i < users.length; i++) {
-    const user = users[i];
-    const targets = users.filter(({ id, filter }) => id !== user.id);
-    try {
-      await prisma.like.create({
-        data: {
-          userId: user.id,
-          targetId: faker.helpers.arrayElement(targets).id,
-          liked: faker.datatype.boolean(),
-        },
-      });
-    } catch (err) {
-      console.error(err);
-    }
+const createConversation = async (userIds: number[]) =>
+  await prisma.conversation.create({
+    data: {
+      users: {
+        create: userIds.map((id) => ({
+          user: {
+            connect: {
+              id,
+            },
+          },
+        })),
+      },
+    },
+  });
+
+const createMatches = async (userId: number, count: number) => {
+  const users = await prisma.user.findMany({
+    take: count,
+    where: { NOT: { id: userId } },
+    select: { id: true },
+  });
+
+  try {
+    await prisma.match.createMany({
+      data: users.reduce<Prisma.MatchCreateManyInput[]>((res, target) => {
+        return [
+          ...res,
+          {
+            targetId: target.id,
+            userId,
+            liked: true,
+          },
+          {
+            targetId: userId,
+            userId: target.id,
+            liked: true,
+          },
+        ];
+      }, []),
+    });
+    await Promise.all(users.map((target) => createConversation([userId, target.id])));
+  } catch (err) {
+    console.error(err);
   }
 };
 
@@ -54,20 +98,20 @@ const cleanTables = () => {
   return Promise.all([prisma.conversation.deleteMany(), prisma.user.deleteMany()]);
 };
 
-const invoke = async (fun: () => Promise<void> | void, times: number = 1) => {
+const invoke = async (fun: () => Promise<any> | void, times: number = 1) => {
   return Promise.all(Array.from({ length: times }, () => fun()));
 };
 
 const main = async () => {
-  const { data } = await axios<{
-    results: [
-      {
-        picture: { large: string };
-      },
-    ];
-  }>('https://randomuser.me/api/?results=50');
-  await Promise.all(data.results.map((user) => createUser(user.picture.large)));
-  await createLikes();
+  await cleanTables();
+  await invoke(createUser, 50);
+  const exampleUser = await createUser({
+    email: 'example@makerfinder.com',
+    password: 'makerfinder20',
+  });
+  if (exampleUser) {
+    await createMatches(exampleUser.id, 30);
+  }
 };
 
 main()

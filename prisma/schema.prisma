@@ -7,7 +7,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Skill {
+generator dbml {
+  provider = "prisma-dbml-generator"
+}
+
+enum Profession {
   FRONTEND_DEVELOPER
   BACKEND_DEVELOPER
   MOBILE_DEVELOPER
@@ -24,8 +28,8 @@ enum Skill {
 }
 
 model Account {
-  id                String  @id @default(uuid())
-  userId            String  @map("user_id")
+  id                Int     @id @default(autoincrement())
+  userId            Int     @map("user_id")
   type              String
   provider          String
   providerAccountId String  @map("provider_account_id")
@@ -44,9 +48,9 @@ model Account {
 }
 
 model Session {
-  id           String   @id @default(uuid())
+  id           Int      @id @default(autoincrement())
   sessionToken String   @unique @map("session_token")
-  userId       String   @map("user_id")
+  userId       Int      @map("user_id")
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -54,47 +58,50 @@ model Session {
 }
 
 model User {
-  id                  String                @id @default(uuid())
-  name                String?
-  email               String?               @unique
-  emailVerified       DateTime?             @map("email_verified")
-  image               String?
-  profilesChecked     Like[]                @relation("ProfilesChecked")
-  targetChecks        Like[]                @relation("TargetProfiles")
-  skill               Skill?
-  description         String?
-  filter              ProfileFilter?
-  timezone            String?
-  createdAt           DateTime              @default(now()) @map("created_at")
-  updatedAt           DateTime              @default(now()) @map("updated_at")
-  accounts            Account[]
-  sessions            Session[]
-  ConversationUser    ConversationUser[]
-  ConversationMessage ConversationMessage[]
+  id              Int         @id @default(autoincrement())
+  name            String
+  email           String      @unique
+  emailVerified   DateTime?   @map("email_verified")
+  image           String?
+  profilesChecked Match[]     @relation("ProfilesChecked")
+  targetChecks    Match[]     @relation("TargetProfiles")
+  profession      Profession?
+  description     String?
+  filter          Filter?
+  passwordHash    String?
+  passwordSalt    String?
+  timezone        String?
+  createdAt       DateTime    @default(now()) @map("created_at")
+  updatedAt       DateTime    @default(now()) @map("updated_at")
+  accounts        Account[]
+  sessions        Session[]
+
+  Message          Message[]
+  ConversationUser ConversationUser[]
 
   @@map("users")
 }
 
-model Like {
-  id         String   @id @default(uuid())
+model Match {
+  id         Int      @id @default(autoincrement())
   user       User     @relation("ProfilesChecked", fields: [userId], references: [id], onDelete: Cascade)
-  userId     String   @map("user_id")
+  userId     Int      @map("user_id")
   targetUser User     @relation("TargetProfiles", fields: [targetId], references: [id], onDelete: Cascade)
-  targetId   String   @map("target_id")
+  targetId   Int      @map("target_id")
   liked      Boolean  @default(false)
   createdAt  DateTime @default(now()) @map("created_at")
   updatedAt  DateTime @default(now()) @map("updated_at")
 
-  @@map("likes")
+  @@map("matches")
 }
 
-model ProfileFilter {
-  id       String  @id @default(uuid())
-  skill    Skill?
-  timezone String?
+model Filter {
+  id         Int         @id @default(autoincrement())
+  profession Profession?
+  timezone   String?
 
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    String   @unique
+  userId    Int      @unique
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @map("updated_at")
 
@@ -102,38 +109,39 @@ model ProfileFilter {
 }
 
 model Conversation {
-  id        String                @id @default(uuid())
-  createdAt DateTime              @default(now()) @map("created_at")
-  updatedAt DateTime              @default(now()) @map("updated_at")
+  id        Int                @id @default(autoincrement())
+  createdAt DateTime           @default(now()) @map("created_at")
+  updatedAt DateTime           @default(now()) @map("updated_at")
   users     ConversationUser[]
-  messages  ConversationMessage[]
+  messages  Message[]
 
   @@map("conversations")
 }
 
 model ConversationUser {
-  id             String       @id @default(uuid())
-  conversation   Conversation @relation(fields: [conversationId], references: [id])
-  conversationId String       @map("conversation_id")
-  user           User         @relation(fields: [userId], references: [id])
-  userId         String       @map("user_id")
+  id             Int          @id @default(autoincrement())
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  conversationId Int          @map("conversation_id")
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         Int          @map("user_id")
   createdAt      DateTime     @default(now()) @map("created_at")
   updatedAt      DateTime     @default(now()) @map("updated_at")
+  read           Boolean      @default(false)
 
   @@map("conversation_users")
 }
 
-model ConversationMessage {
-  id             String       @id @default(uuid())
+model Message {
+  id             Int          @id @default(autoincrement())
   content        String
-  conversation   Conversation @relation(fields: [conversationId], references: [id])
-  conversationId String       @map("conversation_id")
-  user           User         @relation(fields: [userId], references: [id])
-  userId         String       @map("user_id")
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  conversationId Int          @map("conversation_id")
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         Int          @map("user_id")
   createdAt      DateTime     @default(now()) @map("created_at")
   updatedAt      DateTime     @default(now()) @map("updated_at")
 
-  @@map("conversation_messages")
+  @@map("messages")
 }
 
 model VerificationToken {

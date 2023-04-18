@@ -1,7 +1,7 @@
 import prisma from '@/prisma';
 
-export const initConversation = (userIds: string[]) =>
-  prisma.conversation.create({
+export const initConversation = async (userIds: number[]) =>
+  await prisma.conversation.create({
     data: {
       users: {
         create: userIds.map((id) => ({
@@ -15,16 +15,28 @@ export const initConversation = (userIds: string[]) =>
     },
   });
 
-export const getAllConversations = async ({ userId, page = 0, perPage = 7, searchTerm }: any) => {
+export const getAllConversations = async (userId: number, searchTerm?: string | string[]) => {
   let filters = {};
-
-  return  await prisma.conversation.findMany({
+  if (searchTerm) {
+    filters = {
+      messages: {
+        some: {
+          content: {
+            contains: searchTerm,
+            mode: 'insensitive',
+          },
+        },
+      },
+    };
+  }
+  return await prisma.conversation.findMany({
     where: {
       users: {
         some: {
           userId,
         },
       },
+      ...filters,
     },
     include: {
       users: {
@@ -33,7 +45,7 @@ export const getAllConversations = async ({ userId, page = 0, perPage = 7, searc
             select: {
               id: true,
               name: true,
-              skill: true,
+              profession: true,
               image: true,
             },
           },
@@ -45,7 +57,7 @@ export const getAllConversations = async ({ userId, page = 0, perPage = 7, searc
             select: {
               id: true,
               name: true,
-              skill: true,
+              profession: true,
               image: true,
             },
           },
@@ -53,16 +65,41 @@ export const getAllConversations = async ({ userId, page = 0, perPage = 7, searc
         orderBy: {
           createdAt: 'desc',
         },
-        take: 1,
       },
+    },
+    orderBy: {
+      id: 'desc',
     },
   });
 };
 
-export const getConversation = async (id: string, userId: string) => {
-  // await markAsRead({ conversationId: id, userId });
+export const markAsRead = (userId: number, conversationId: number) =>
+  prisma.conversationUser.updateMany({
+    where: {
+      conversationId,
+      userId,
+    },
+    data: {
+      read: true,
+    },
+  });
 
-  return prisma.conversation.findFirst({
+export const getConversation = async (id: number, userId: number, searchTerm?:string | string[]) => {
+  await markAsRead(userId, id);
+  let filters = {};
+  if (searchTerm) {
+    filters = {
+      messages: {
+        some: {
+          content: {
+            contains: searchTerm,
+            mode: 'insensitive',
+          },
+        },
+      },
+    };
+  }
+  return await prisma.conversation.findFirst({
     where: {
       id,
       users: {
@@ -70,27 +107,41 @@ export const getConversation = async (id: string, userId: string) => {
           userId,
         },
       },
+      ...filters
     },
     include: {
       users: {
-        include: {
-          user: true,
-        },
+        include: { user: true },
       },
       messages: {
         include: {
-          user: true,
+          user: {
+            select: {
+              id: true,
+              name: true,
+              profession: true,
+              image: true,
+            },
+          },
         },
+        orderBy: {
+          createdAt: 'asc',
+        },
+        take: 50,
       },
     },
   });
 };
 
-export const createConversation = async (
-  userId: string,
-  conversationId: string,
-  content: string,
-) => {
+export const createMessage = async ({
+  userId,
+  conversationId,
+  content,
+}: {
+  userId: number;
+  conversationId: number;
+  content: string;
+}) => {
   const conversation = await prisma.conversation.findFirst({
     where: {
       id: conversationId,
@@ -106,7 +157,7 @@ export const createConversation = async (
     throw new Error('conversation_not_found');
   }
 
-  return  await prisma.conversationMessage.create({
+  return await prisma.message.create({
     data: {
       conversation: {
         connect: {
@@ -119,9 +170,7 @@ export const createConversation = async (
         },
       },
       content,
-      createdAt: new Date(),
-      updatedAt: new Date(),
     },
   });
-
 };
+

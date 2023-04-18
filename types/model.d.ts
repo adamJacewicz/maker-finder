@@ -1,49 +1,59 @@
-import { skills, timezones } from '@/utils/constants';
-
+import {professions,  timezones} from '@/utils/constants';
 export type Filter = {
-  id: string
+  id: number
   user: User
-  userId: string
+  userId: number
   createdAt: Date
   updatedAt: Date
-  skill: keyof typeof skills | null;
-  timezone: (typeof timezones)[number] | null;
+  profession: keyof typeof professions
+  timezone: (typeof timezones)[number]
 };
 
 export type User = {
-  id: string;
-  name: string | null;
-  email: string | null;
-  description?: string | null;
+  id: number;
+  name: string;
+  email: string
+  emailVerified: string | null
+  description: string | null;
   image: string | null;
   timezone: string | null;
-  skill?: keyof typeof skills | null;
-  filter?: Filter | null;
+  passwordHash: string | null
+  passwordSalt: string | null
+  profession: keyof typeof professions | null
+  filter: Filter | null;
   createdAt: Date
   updatedAt: Date
 };
 
-export type ProfileType = Pick<User, 'name' | 'description' | 'email' | 'id' | 'skill' | 'image'>;
+export type UserData = {
+  id: number;
+  name: string;
+  description: string | null;
+  image: string | null;
+  timezone: string ;
+  profession: keyof typeof professions
+};
+
 
 export type CurrentUser = {
-  name: string | null;
+  name: string;
   email: string;
   image: string | null;
-  id: string;
+  id: number;
 };
 
 export type ConversationUser = {
-  id: string
+  id: number
   conversation: Conversation
-  conversationId: string
+  conversationId: number
   user: User
-  userId: string
+  userId: number
   createdAt: Date
   updatedAt: Date
 }
 
 export type Conversation = {
-  id: string;
+  id: number;
   createdAt: Date;
   updatedAt: Date;
   users: ConversationUser[];
@@ -51,12 +61,12 @@ export type Conversation = {
 };
 
 export type ConversationMessage = {
-  id: string;
+  id: number;
   content: string;
   conversation: Conversation;
-  conversationId: string;
+  conversationId: number;
   user: User;
-  userId: string;
+  userId: number;
   createdAt: Date;
   updatedAt: Date;
 };
