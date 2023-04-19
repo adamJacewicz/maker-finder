@@ -1,12 +1,12 @@
 import onlyAuth from '@/hooks/only-auth';
-import {getFilter, upsertFilter} from '@/services/filter.service';
-import { Method } from '@/utils/constants';
+import { getFilter, upsertFilter } from '@/services/filter.service';
+import { HttpMethod } from '@/utils/constants';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
-  if(!req.currentUser) return
+  if (!req.currentUser) return;
   switch (req.method) {
-    case Method.PUT: {
+    case HttpMethod.PUT: {
       try {
         const filter = await upsertFilter(req.currentUser.id, req.body);
         res.status(200).json({ filter });
@@ -15,10 +15,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       }
       break;
     }
-    case Method.GET: {
+    case HttpMethod.GET: {
       try {
         const filter = await getFilter(req.currentUser.id);
-        res.status(200).json({filter});
+        res.status(200).json({ filter });
       } catch (error) {
         res.status(422).json({ filter: null, error });
       }

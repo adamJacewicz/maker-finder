@@ -1,9 +1,9 @@
 import Link from 'next/link';
 import { signOut } from 'next-auth/react';
-import User from '@/public/user.svg';
 import useAuth from '@/hooks/use-auth';
 import { Menu } from '@headlessui/react';
 import { ElementType, HTMLProps } from 'react';
+import UserAvatar from '@/components/UserAvatar';
 
 export interface MenuItemProps extends Omit<HTMLProps<HTMLElement>, 'as' | 'ref'> {
   as?: ElementType;
@@ -37,10 +37,7 @@ const Navigation = () => {
           <Link className="hover:bg-base-600 rounded-md px-3 py-2 font-medium" href="/">
             Home
           </Link>
-          <Link
-            className="hover:bg-base-600 rounded-md px-3 py-2 font-medium"
-            href="/profiles/browse"
-          >
+          <Link className="hover:bg-base-600 rounded-md px-3 py-2 font-medium" href="/browse">
             Browse
           </Link>
           <Link className="hover:bg-base-600 rounded-md px-3 py-2 font-medium" href="/connections">
@@ -50,9 +47,7 @@ const Navigation = () => {
         {isAuthenticated ? (
           <Menu as="div" className="relative">
             <Menu.Button className="rounded-full hover:bg-base-500 block">
-              <div className="border-2 rounded-full overflow-hidden flex justify-center items-center w-10 h-10">
-                {data?.user?.image ? <img src={data.user.image} alt="User image" /> : <User />}
-              </div>
+              <UserAvatar user={data?.user} />
             </Menu.Button>
             <Menu.Items className="absolute right-0 mt-1 w-32 shadow-2xl p-2 border border-base-700 origin-top-right rounded-md overflow-hidden bg-base-600">
               {menuItems.map(({ as, text, ...rest }, index) => (

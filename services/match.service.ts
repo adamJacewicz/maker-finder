@@ -1,8 +1,58 @@
 import prisma from '@/prisma';
-import { asyncFilter } from '@/utils/helpers';
+const alreadyProcessed = async (where: { userId: number; targetId: number; liked: boolean }) =>
+  !!(await prisma.match.count({
+    where,
+  }));
 
-export const checkIfMatchExists = async (userId: string, targetId: string) => {
-  const count = await prisma.like.count({
+export const processProfile = async ({
+  userId,
+  targetId,
+  liked,
+}: {
+  userId: number;
+  targetId: number;
+  liked: boolean;
+}) => {
+  if (
+    await alreadyProcessed({
+      liked,
+      userId,
+      targetId,
+    })
+  ) {
+    throw new Error(liked ? 'profile_already_liked' : 'profile_already_skipped');
+  }
+
+  await prisma.match.create({
+    data: {
+      user: {
+        connect: {
+          id: userId,
+        },
+      },
+      targetUser: {
+        connect: {
+          id: targetId,
+        },
+      },
+      liked,
+    },
+  });
+
+  const hasMatch = liked ? await checkIfMatchExists(targetId, userId) : false;
+
+
+  const targetUser = await prisma.user.findUnique({
+    where: {
+      id: targetId,
+    },
+  });
+
+  return { targetUser, hasMatch };
+};
+
+export const checkIfMatchExists = async (userId: number, targetId: number) => {
+  const count = await prisma.match.count({
     where: {
       liked: true,
       userId,
@@ -13,8 +63,8 @@ export const checkIfMatchExists = async (userId: string, targetId: string) => {
   return count > 0;
 };
 
-const getCheckedIds = async (userId: string) => {
-  const profiles = await prisma.like.findMany({
+const getCheckedIds = async (userId: number): Promise<number[]> => {
+  const profiles = await prisma.match.findMany({
     where: {
       userId,
     },
@@ -26,8 +76,8 @@ const getCheckedIds = async (userId: string) => {
   return profiles.map(({ targetId }) => targetId);
 };
 
-export const findMatch = async (userId: string) => {
-  const filter = await prisma.profileFilter.findUnique({
+export const findMatch = async (userId: number) => {
+  const filter = await prisma.filter.findUnique({
     where: {
       userId,
     },
@@ -36,48 +86,19 @@ export const findMatch = async (userId: string) => {
   const checkedIds = await getCheckedIds(userId);
   return await prisma.user.findFirst({
     where: {
-      skill: filter.skill,
+      profession: filter.profession,
       timezone: filter.timezone,
       NOT: {
         id: { in: [...checkedIds, userId] },
       },
     },
     select: {
+      timezone: true,
       id: true,
       name: true,
-      skill: true,
+      profession: true,
       image: true,
       description: true,
     },
   });
-};
-
-export const getMatched = async (userId: string) => {
-  const likedTargets = await prisma.like.findMany({
-    where: {
-      liked: true,
-      userId,
-    },
-  });
-
-  const matchedProfiles = await asyncFilter(
-    likedTargets,
-    async ({ targetId }) => await checkIfMatchExists(targetId, userId),
-  );
-
-  return await Promise.all(
-    matchedProfiles.map((x) =>
-      prisma.user.findUnique({
-        where: { id: x.targetId },
-        select: {
-          id: true,
-          name: true,
-          image: true,
-          skill: true,
-          timezone: true,
-          description: true,
-        },
-      }),
-    ),
-  );
 };

@@ -1,20 +1,22 @@
-import { Method } from '@/utils/constants';
+import { HttpMethod } from '@/utils/constants';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { findMatch } from '@/services/match.service';
 import onlyAuth from '@/hooks/only-auth';
-import { processProfile } from '@/services/profile.service';
+import { processProfile } from '@/services/match.service';
+import { initConversation } from '@/services/conversation.service';
 
 const profilesApi = async (req: NextApiRequest, res: NextApiResponse) => {
-  if (!req.currentUser) return;
-  const userId = req.currentUser.id;
+  const userId = req.currentUser?.id;
+  if (!userId) return;
   switch (req.method) {
-    case Method.POST: {
+    case HttpMethod.POST: {
       try {
-        const { targetUser, hasMatch } = await processProfile({ ...req.body, userId });
+        const { targetId, liked } = req.body;
+        const { targetUser, hasMatch } = await processProfile({ targetId, liked, userId });
+        if (hasMatch) await initConversation([userId, targetId]);
         const nextProfile = await findMatch(userId);
         res.status(200).json({ targetUser, hasMatch, nextProfile });
       } catch (error) {
-        console.log(`error`, error);
         res.status(422).json({ hasMatch: false, targetUser: null, error });
       }
       break;

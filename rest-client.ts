@@ -1,6 +1,6 @@
-import axios, {AxiosPromise} from 'axios';
-import {Conversation as ConversationType, Conversation, Filter, ProfileType, User} from '@/types/model';
-import {Fetcher} from "swr";
+import axios, { AxiosPromise } from 'axios';
+import { Conversation, ConversationMessage, Filter, User, UserData } from '@/types/model';
+import { PaginationPayload } from '@/types/common';
 
 const axiosInstance = axios.create({
   headers: {
@@ -10,31 +10,42 @@ const axiosInstance = axios.create({
 
 const restClient = {
   profiles: {
-    processProfile: (payload: { targetId: string; liked: boolean }) =>
-      axiosInstance.post<{ targetUser: User; nextProfile: ProfileType; hasMatch: boolean }>(
-        '/api/profiles',
-        payload,
-      ),
+    processProfile: (payload: {
+      targetId: number;
+      liked: boolean;
+    }): AxiosPromise<{ targetUser: UserData; nextProfile: UserData; hasMatch: boolean }> =>
+      axiosInstance.post('/api/profiles', payload),
   },
   user: {
     filter: {
-      update: (payload: Partial<Filter>) =>
-        axiosInstance.put<{ filter: Filter }>('/api/user/filter', payload),
-      get: () => axiosInstance.get<{ filter: Filter }>('/api/user/filter'),
+      update: (payload: Partial<Filter>): AxiosPromise<{ filter: Filter }> =>
+        axiosInstance.put('/api/user/filter', payload),
+      get: (): AxiosPromise<{ filter: Filter }> => axiosInstance.get('/api/user/filter'),
     },
     profile: {
-      get: () => axiosInstance.get<{ user: User }>('/api/user/profile'),
-      update: (payload: Partial<Filter & { name: string; image: string }>) =>
-        axiosInstance.put<{ user: User }>('/api/user/profile', payload),
+      get: (): AxiosPromise<{ user: User }> => axiosInstance.get('/api/user/profile'),
+      update: (
+        payload: Partial<Filter & { name: string; image: string }>,
+      ): AxiosPromise<{ user: User }> => axiosInstance.put('/api/user/profile', payload),
     },
   },
   conversations: {
     message: {
-      create: (id: string, payload: { content: string }) =>
+      create: (
+        id: number,
+        payload: { content: string },
+      ): AxiosPromise<{ message: ConversationMessage }> =>
         axiosInstance.post(`/api/conversations/${id}`, payload),
     },
+    conversation: {
+      get: (id: number): AxiosPromise<{ conversation: Conversation }> =>
+        axiosInstance.get(`/api/conversations/${id}`),
+      getAll: (payload: PaginationPayload): AxiosPromise<{ conversation: Conversation }> =>
+        axiosInstance.get(`/api/conversations?page=${payload.page}&perPage=${payload.perPage}`),
+    },
   },
-  fetcher:((url: string) => axiosInstance.get(url).then(res => res.data)) as Fetcher<{ conversation: ConversationType }, string>   ,
+  fetcher: (url: string) => axiosInstance.get(url).then((res) => res.data),
 };
+
 
 export default restClient;

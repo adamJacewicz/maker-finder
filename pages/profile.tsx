@@ -1,8 +1,8 @@
 import React, { FC } from 'react';
 import Layout from '@/components/Layout';
-import {GetServerSideProps} from "next";
-import {getServerSession} from "next-auth";
-import {authOptions} from "@/pages/api/auth/[...nextauth]";
+import { GetServerSideProps } from 'next';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/pages/api/auth/[...nextauth]';
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   const session = await getServerSession(req, res, authOptions);
@@ -21,7 +21,11 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
 };
 
 const Profile: FC = () => {
-  return <Layout><h1>asdasd</h1></Layout>;
+  return (
+    <Layout>
+      <h1>asdasd</h1>
+    </Layout>
+  );
 };
 
 export default Profile;
