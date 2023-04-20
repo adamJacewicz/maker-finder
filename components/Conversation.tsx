@@ -6,14 +6,30 @@ import SendIcon from '@/public/send.svg';
 import UserAvatar from '@/components/UserAvatar';
 import { User } from 'next-auth';
 import { toHour } from '@/utils/helpers';
+import clsx from 'clsx';
 
 const Message: FC<{ message: ConversationMessage; isMine: boolean }> = ({ message, isMine }) => (
-  <div className="flex items-end mb-4 max-w-[60%]">
-    <div className="w-10 h-10 hidden sm:block flex-none  relative mr-4 mb-5">
+  <div
+    className={clsx(
+      'flex items-end mb-4 max-w-[60%]',
+      isMine ? 'ml-auto justify-end' : 'mr-auto justify-start',
+    )}
+  >
+    <div
+      className={clsx(
+        'w-10 h-10 hidden sm:block flex-none relative mr-4 mb-5',
+        isMine ? 'order-1 ml-4' : 'mr-4',
+      )}
+    >
       <img alt={message.user.name} className="rounded-full" src={message.user.image!} />
     </div>
     <div>
-      <div className="bg-base-500 rounded-md leading-relaxed dark:text-gray-300 text-gray-700 px-4 py-3 ">
+      <div
+        className={clsx(
+          'bg-base-500 rounded-md leading-relaxed dark:text-gray-300 text-gray-700 px-4 py-3',
+          { 'bg-theme-accent': isMine },
+        )}
+      >
         {message.content}
       </div>
       <div className="text-gray-600 text-xs mt-1">{toHour(message.createdAt)}</div>

@@ -1,4 +1,4 @@
-import React, { ReactElement, useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { ReactElement, useCallback, useMemo, useRef } from 'react';
 import useSWRInfinite, { SWRInfiniteKeyLoader } from 'swr/infinite';
 import restClient from '@/rest-client';
 
