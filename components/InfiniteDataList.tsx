@@ -28,7 +28,7 @@ function InfiniteDataList<T>({ queryKey, initialData = [], renderItem }: Infinit
       { root: listRef.current, rootMargin: '10px' },
     );
     if (node) observer.current.observe(node);
-  }, []);
+  }, [setSize]);
 
   return (
     <div className="overflow-y-auto scrollbar-hidden pt-2 mt-3 -mx-5 px-5" ref={listRef}>

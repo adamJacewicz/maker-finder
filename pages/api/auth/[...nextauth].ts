@@ -8,6 +8,7 @@ import { authorize } from '@/services/user.service';
 export const authOptions: AuthOptions = {
   session: {
     strategy: 'jwt',
+    maxAge: 24 * 60 * 60,
   },
   providers: [
     CredentialsProvider({
@@ -17,7 +18,7 @@ export const authOptions: AuthOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials, req) {
-        return credentials ? await authorize(credentials) : null;
+        return await authorize(credentials);
       },
     }),
     GithubProvider({
@@ -31,8 +32,8 @@ export const authOptions: AuthOptions = {
   callbacks: {
     async session({ session, token, user }) {
       if (session.user) {
-        session.user.id = Number(token?.id)
-        session.user.image = String(token?.image)
+        session.user.id = Number(token?.id);
+        session.user.image = String(token?.image);
       }
       return session;
     },

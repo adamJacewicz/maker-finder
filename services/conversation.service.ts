@@ -63,7 +63,7 @@ export const getAllConversations = async (userId: number, searchTerm?: string | 
           },
         },
         orderBy: {
-          createdAt: 'desc',
+          createdAt: 'asc',
         },
       },
     },
@@ -127,7 +127,7 @@ export const getConversation = async (id: number, userId: number, searchTerm?:st
         orderBy: {
           createdAt: 'asc',
         },
-        take: 50,
+        take: -50,
       },
     },
   });
@@ -154,6 +154,7 @@ export const createMessage = async ({
   });
 
   if (!conversation) {
+    console.log(222)
     throw new Error('conversation_not_found');
   }
 
