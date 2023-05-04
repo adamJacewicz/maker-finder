@@ -24,16 +24,16 @@ const ConversationLink: FC<{ conversation: Conversation }> = ({ conversation }) 
         'rounded-md shadow cursor-pointer relative flex px-4 py-3 mt-4',
       )}
     >
-      <div className=" mr-1">
+      <div className="mr-1">
         <UserAvatar className="w-12 h-12" user={receiver} />
       </div>
-      <div className="ml-2 flex flex-col overflow-hidden">
+      <div className="ml-2 flex flex-col overflow-hidden flex-grow">
         <h3 className="font-medium text-white">{receiver.name}</h3>
         <div className="text-opacity-80 w-4/5 truncate mt-0.5 text-white">
           {lastMessage?.content}
         </div>
       </div>
-      <div className="flex flex-col ml-auto">
+      <div className="flex flex-col">
         <div className="whitespace-nowrap text-opacity-80 text-xs text-white">
           {toHour(lastMessage?.createdAt)}
         </div>

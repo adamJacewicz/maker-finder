@@ -1,7 +1,7 @@
 import { FormEventHandler, MouseEventHandler, useRef } from 'react';
 import { signIn } from 'next-auth/react';
 import GithubIcon from '@/public/github.svg';
-import { GetServerSideProps, NextPage } from 'next';
+import { GetServerSideProps } from 'next';
 import { authOptions } from '@/pages/api/auth/[...nextauth]';
 import { getServerSession } from 'next-auth';
 import { useRouter } from 'next/router';
@@ -42,8 +42,6 @@ const Login = () => {
             ref={loginForm}
             onSubmit={handleSubmit}
             className="space-y-6"
-            action="#"
-            method="POST"
           >
             <Input
               defaultValue="example@makerfinder.com"
@@ -85,14 +83,12 @@ const Login = () => {
               </div>
             </div>
 
-            <div>
-              <button
-                type="submit"
-                className="w-full flex justify-center py-2 px-4 border-0 rounded-md text-sm font-medium text-white bg-theme-accent hover:bg-theme-accent-dark focus:outline-none focus:ring-1 focus:ring-white"
-              >
-                Sign in
-              </button>
-            </div>
+            <button
+              type="submit"
+              className="w-full flex justify-center py-2 px-4 border-0 rounded-md text-sm font-medium text-white bg-theme-accent hover:bg-theme-accent-dark focus:outline-none focus:ring-1 focus:ring-white"
+            >
+              Sign in
+            </button>
           </form>
 
           <div className="mt-6">

@@ -1,24 +1,25 @@
-import { createMessage, getConversation} from '@/services/conversation.service';
+import { createMessage, getConversation } from '@/services/conversation.service';
 import onlyAuth from '@/hooks/only-auth';
 import { HttpMethod } from '@/utils/constants';
 import { NextApiHandler } from 'next';
+import { messageSchema } from '@/utils/schemas';
 
 const conversationApi: NextApiHandler = async (req, res) => {
   const conversationId = Number(req.query.id);
   const userId = req.currentUser?.id;
-  if(!userId) return
+  if (!userId) return;
   switch (req.method) {
     case HttpMethod.POST: {
       try {
+        messageSchema.parse({ message: req.body.content });
         const message = await createMessage({
           content: req.body.content,
           userId,
           conversationId,
         });
-
         res.status(200).json({ message });
       } catch (error) {
-        res.status(422).json({ message: null, error });
+        res.status(422).json({ error });
       }
       break;
     }

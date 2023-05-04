@@ -11,9 +11,10 @@ export const getUserByEmail = async (email: string) =>
     },
   });
 
-export const authorize = async (credentials: Credentials) => {
+export const authorize = async (credentials?: Credentials) => {
+  if(!credentials) return null
   try {
-    await credentialsSchema.validate(credentials);
+    credentialsSchema.parse(credentials)
     const user = await getUserByEmail(credentials.email);
     if (!user?.passwordSalt) return null;
     const passwordHash = encrypt(credentials.password, user.passwordSalt);
@@ -25,7 +26,6 @@ export const authorize = async (credentials: Credentials) => {
       image: user.image,
     };
   } catch (err) {
-    console.log(err);
     return null
   }
 };

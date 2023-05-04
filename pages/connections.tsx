@@ -63,13 +63,14 @@ const Connections: FC<{
   return (
     <Layout>
       <section className="flex-1 sm:w-3/5 xl:w-auto grid grid-cols-12 gap-6">
-        <div className="side-content col-span-12 xl:col-span-3 -mt-16 xl:mt-0 pt-20 xl:-mr-6 px-6 xl:pt-6 side-content--active flex-col overflow-hidden">
+        <div className="flex col-span-12 xl:col-span-3 -mt-16 xl:mt-0 pt-20 xl:-mr-6 px-6 xl:pt-6 flex-col overflow-hidden">
           <h3 className="text-xl font-medium">Chats</h3>
           <Input
             ref={searchRef}
             defaultValue={router.query.searchTerm}
             onKeyDown={handleKey}
             icon={SearchIcon}
+            name="search"
             placeholder="Search for messages or users..."
           />
           <div className="overflow-y-auto scrollbar-hidden pt-2 mt-3 -mx-5 px-5">

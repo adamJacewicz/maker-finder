@@ -2,6 +2,7 @@ import { professions } from './constants';
 import crypto from 'crypto';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import { ConversationMessage, ConversationMessageExtended } from '@/types/model';
 dayjs.extend(relativeTime);
 
 export const asyncFilter = async <T>(arr: Array<T>, predicate: (value: T) => Promise<boolean>) =>
@@ -17,4 +18,9 @@ export const encrypt = (password: string, salt: string) =>
 
 export const getRandomSalt = () => crypto.randomBytes(16).toString('hex');
 
-export const toHour = (date: string | Date) => (date ? dayjs(date).format('HH:mm A') : null);
+export const toHour = (date: string | Date) => dayjs(date).format('HH:mm A');
+
+export const toDate = (date: string | Date) => dayjs(date).format('DD MMMM YYYY');
+export const isBeforeDay = (beforeDate: string | Date, afterDate: string | Date) =>
+  dayjs(beforeDate).isBefore(afterDate, 'day');
+
