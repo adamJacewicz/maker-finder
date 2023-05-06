@@ -154,7 +154,6 @@ export const createMessage = async ({
   });
 
   if (!conversation) {
-    console.log(222)
     throw new Error('conversation_not_found');
   }
 

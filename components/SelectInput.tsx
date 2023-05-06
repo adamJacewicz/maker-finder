@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useMemo, useState } from 'react';
 import { Listbox } from '@headlessui/react';
 import CheckIcon from '@/public/check.svg';
 
@@ -9,13 +9,13 @@ export interface Option {
 
 interface SelectInputProps<T = Option> {
   options: Array<T>;
-  defaultValue: T;
+  defaultValue?: T;
   onChange?: (option: T, name: string) => void;
   name?: string;
 }
 
 const SelectInput: FC<SelectInputProps> = ({ options, defaultValue, onChange, name = '' }) => {
-  const [selected, setSelected] = useState(defaultValue.value ? defaultValue : options[0]);
+  const [selected, setSelected] = useState(defaultValue);
 
   const handleChange = (option: Option) => {
     setSelected(option);
@@ -24,20 +24,22 @@ const SelectInput: FC<SelectInputProps> = ({ options, defaultValue, onChange, na
 
   return (
     <Listbox value={selected} onChange={handleChange}>
-      <div className="relative w-[300px]  font-semibold text-base-700">
-        <Listbox.Label className="capitalize text-base-50 tracking-wide my-2">{name}</Listbox.Label>
-        <Listbox.Button className="relative bg-base-50 w-full rounded-md py-1 px-4 text-left shadow-md">
-          {selected.label}
+      <div className="relative w-[300px] font-semibold text-white">
+        <Listbox.Label className="capitalize text-base-50 tracking-wide block mb-1">
+          {name}
+        </Listbox.Label>
+        <Listbox.Button className="relative bg-theme-secondary  border-gray-500 border w-full rounded-md py-1 px-4 text-left shadow-md">
+          {selected?.label}
         </Listbox.Button>
-        <Listbox.Options className="custom-scroll absolute top-full mt-1 max-h-60 w-full overflow-auto rounded-md py-1 px-2 shadow-lg bg-base-50">
+        <Listbox.Options className="scrollbar-hidden absolute top-full mt-2 max-h-60 w-full overflow-auto bg-theme-secondary rounded-md py-1 shadow-lg  border-gray-500 border ">
           {options.map((option) => (
             <Listbox.Option
               key={option.value}
-              className="py-1 rounded-md px-2 cursor-pointer flex justify-between items-center hover:bg-base-100"
+              className="py-1 px-2 cursor-pointer flex justify-between items-center hover:bg-theme-accent hover:text-white"
               value={option}
             >
               <span>{option.label}</span>
-              {selected.value === option.value && <CheckIcon />}
+              {selected?.value === option.value && <CheckIcon />}
             </Listbox.Option>
           ))}
         </Listbox.Options>

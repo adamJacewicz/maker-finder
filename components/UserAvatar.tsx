@@ -15,7 +15,7 @@ const UserAvatar: FC<UserAvatarProps> = ({ user, className }) => {
   return (
     <div
       className={clsx(
-        'flex justify-center items-center relative w-12 h-12',
+        'flex justify-center items-center relative w-10 h-10',
         className,
         statusIndicator,
       )}

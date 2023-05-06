@@ -12,7 +12,6 @@ const conversationApi: NextApiHandler = async (req, res) => {
         const conversations = await getAllConversations(userId, req.query.searchTerm ?? "");
         res.status(200).json(conversations);
       } catch (error) {
-        console.log(`error`, error);
         res.status(422).json(error);
       }
       break;
