@@ -1,5 +1,4 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import prisma from '@/prisma';
 import { HttpMethod } from '@/utils/constants';
 import onlyAuth from '@/hooks/only-auth';
 import {getUserById, updateUser} from "@/services/user.service";

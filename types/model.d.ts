@@ -30,7 +30,7 @@ export type UserData = {
   name: string;
   description: string | null;
   image: string | null;
-  timezone: string;
+  timezone: (typeof timezones)[number];
   profession: keyof typeof professions;
 };
 

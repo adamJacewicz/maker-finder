@@ -5,7 +5,7 @@ const Layout: FC<PropsWithChildren> = ({ children }) => {
   return (
     <section className="h-screen flex flex-col">
       <Navigation />
-      <main className="flex-1 flex max-h-[calc(100%_-_100px)]">{children}</main>
+      <main className="flex-1 flex max-h-[calc(100%_-_72px)]">{children}</main>
     </section>
   );
 };

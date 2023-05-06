@@ -1,9 +1,6 @@
 import { FormEventHandler, MouseEventHandler, useRef } from 'react';
 import { signIn } from 'next-auth/react';
 import GithubIcon from '@/public/github.svg';
-import { GetServerSideProps } from 'next';
-import { authOptions } from '@/pages/api/auth/[...nextauth]';
-import { getServerSession } from 'next-auth';
 import { useRouter } from 'next/router';
 import Input from '@/components/Input';
 
@@ -31,18 +28,14 @@ const Login = () => {
   };
 
   return (
-    <section className="flex flex-col justify-center px-4 py-12 sm:px-6 lg:px-8 gap-8 mt-36">
+    <section className="flex flex-col justify-center px-4 py-12 sm:px-6 lg:px-8 gap-8 mx-auto">
       <header>
-        <h2 className="text-center text-3xl font-extrabold text-white">Sign in to your account</h2>
+        <h2 className="text-center text-3xl font-bold text-white">Sign in to your account</h2>
       </header>
 
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-theme-primary py-8 px-4 shadow rounded-lg sm:px-10">
-          <form
-            ref={loginForm}
-            onSubmit={handleSubmit}
-            className="space-y-6"
-          >
+        <div className="bg-theme-primary py-8 px-4 shadow rounded-lg sm:px-8">
+          <form ref={loginForm} onSubmit={handleSubmit} className="space-y-6">
             <Input
               defaultValue="example@makerfinder.com"
               id="email"
@@ -63,7 +56,7 @@ const Login = () => {
               required
             />
 
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-6">
               <div className="flex items-center">
                 <input
                   id="remember-me"
@@ -77,7 +70,10 @@ const Login = () => {
               </div>
 
               <div className="text-sm">
-                <a href="#" className="font-medium text-theme-accent-light hover:text-theme-accent">
+                <a
+                  href="#"
+                  className="font-medium text-theme-accent-light hover:text-theme-accent"
+                >
                   Forgot your password?
                 </a>
               </div>
@@ -104,9 +100,9 @@ const Login = () => {
             <div className="mt-6 flex justify-center">
               <button
                 onClick={handleLogin}
-                className="w-1/3 flex justify-center py-2 px-4 rounded-md hover:bg-gray-200 bg-white text-sm font-medium text-theme-primary focus:outline-none focus:ring-2 focus:ring-theme-accent-light"
+                className="flex justify-center py-2 px-4 rounded-md hover:bg-gray-200 bg-white text-sm font-medium text-theme-primary focus:outline-none focus:ring-2 focus:ring-theme-accent-light"
               >
-                <GithubIcon fill="currentColor" className="w-5 h-5 mr-2" />
+                <GithubIcon className="mr-2" />
                 <span className="">GitHub</span>
               </button>
             </div>
@@ -115,22 +111,6 @@ const Login = () => {
       </div>
     </section>
   );
-};
-
-export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
-  const session = await getServerSession(req, res, authOptions);
-
-  if (session?.user) {
-    return {
-      redirect: {
-        destination: '/',
-        permanent: false,
-      },
-    };
-  }
-  return {
-    props: {},
-  };
 };
 
 export default Login;

@@ -6,16 +6,10 @@ const useAuth = () => {
   const session = useSession();
   const isAuthenticated = useMemo(() => session.status === 'authenticated', [session.status]);
   const isLoading = useMemo(() => session.status === 'loading', [session.status]);
-  const router = useRouter();
-  useEffect(() => {
-    if (!isAuthenticated && !isLoading) {
-      router.push('/');
-    }
-  }, [isAuthenticated, isLoading]);
   return {
     isAuthenticated,
     isLoading,
-    data: session.data,
+    user: session.data?.user,
   };
 };
 

@@ -13,23 +13,15 @@ import Message from '@/components/Message';
 import ChatInput from '@/components/ChatInput';
 
 const Conversation: FC<{
-  initConversation?: ConversationType;
+  conversation: ConversationType;
   currentUser: CurrentUser;
-}> = ({ initConversation, currentUser }) => {
+}> = ({ conversation, currentUser }) => {
   const lastListElementRef = useRef<HTMLDivElement | null>(null);
-  const { data: conversation } = useSWR(
-    initConversation ? `/api/conversations/${initConversation.id}` : null,
-    restClient.fetcher as Fetcher<ConversationType | undefined, string>,
-    {
-      fallbackData: initConversation,
-    },
-  );
+
   useEffect(() => {
     if (!lastListElementRef.current) return;
     lastListElementRef.current.scrollIntoView();
   }, [conversation?.messages]);
-
-  if (!conversation) return <h5>NO DATA</h5>;
 
   const receiver = conversation.users.find(({ user }) => user.id !== currentUser.id)?.user as User;
 
@@ -42,21 +34,18 @@ const Conversation: FC<{
   );
 
   return (
-    <div className="col-span-12 xl:col-span-9 flex flex-col overflow-hidden  p-6">
-      <div className="bg-base-700 flex items-center px-5 py-4 rounded-md">
+    <div className="col-span-12 xl:col-span-9 flex flex-col overflow-hidden p-3">
+      <div className="bg-base-700 flex items-center px-5 py-3 rounded-md">
         <div className="image-fit mr-1">
           <UserAvatar user={receiver} />
-          <div className="bg-green-500 w-3 h-3 absolute right-0 bottom-0 rounded-full border border-white"></div>
         </div>
-        <div className="ml-2 overflow-hidden">
-          <a href="#" className="text-base font-medium">
-            {receiver.name}
-          </a>
+        <div className="ml-2 overflow-hidden text-base font-medium">
+          {receiver.name}
           <div className="text-gray-600">Online</div>
         </div>
       </div>
 
-      <div className="overflow-y-auto scrollbar-hidden flex-1 max-h-full rounded-xl p-2">
+      <div className="overflow-y-auto scrollbar-hidden flex-1 max-h-full rounded-xl p-6">
         {messages.map((message) => (
           <Message key={message.id} message={message} />
         ))}

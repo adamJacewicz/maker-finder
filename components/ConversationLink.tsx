@@ -1,27 +1,26 @@
-import React, { FC } from 'react';
+import React, { FC, MouseEventHandler } from 'react';
 import clsx from 'clsx';
-import Link from 'next/link';
+import { Link } from '@/components/Navigation';
 import { Conversation } from '@/types/model';
-import { useRouter } from 'next/router';
 import UserAvatar from '@/components/UserAvatar';
 import { toHour } from '@/utils/helpers';
-import {User} from "next-auth";
-import useAuth from "@/hooks/use-auth";
+import { User } from 'next-auth';
+import useAuth from '@/hooks/use-auth';
+import { useRouter } from 'next/router';
 
-const ConversationLink: FC<{ conversation: Conversation }> = ({ conversation }) => {
+const ConversationLink: FC<{
+  conversation: Conversation;
+}> = ({ conversation }) => {
+  const { user: currentUser } = useAuth();
   const router = useRouter();
-  const {data} = useAuth();
-  const isSelected = Number(router.query.id) === conversation.id;
   const lastMessage = conversation.messages[0];
-  const receiver = conversation.users.find(({ user }) => user.id !== data?.user?.id)?.user as User;
-
+  const receiver = conversation.users.find(({ user }) => user.id !== currentUser?.id)?.user as User;
   return (
     <Link
       key={conversation.id}
-      href={{ pathname: '/connections', query: { ...router.query,id: conversation.id } }}
+      href={`/conversations/${conversation.id}`}
       className={clsx(
-        isSelected ? 'bg-theme-accent-dark' : 'bg-base-500',
-        'rounded-md shadow cursor-pointer relative flex px-4 py-3 mt-4',
+        'rounded-md shadow cursor-pointer relative flex px-4 py-3 mt-4 bg-base-500 first-of-type:mt-0',
       )}
     >
       <div className="mr-1">
